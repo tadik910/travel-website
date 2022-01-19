@@ -4,20 +4,16 @@ const fs = require("fs");
 
 const server = http.createServer((req, res) => {
 
-  // Build file path
   let filePath = path.join(
     __dirname,
     "public",
     req.url === "/" ? "index.html" : req.url
   );
 
-  // Extension of file
   let extname = path.extname(filePath);
 
-  // Initial content type
   let contentType = "text/html";
 
-  // Check ext and set content type
   switch (extname) {
     case ".js":
       contentType = "text/javascript";
@@ -36,18 +32,13 @@ const server = http.createServer((req, res) => {
       break;
   }
 
-  // Check if contentType is text/html but no .html file extension
   if (contentType == "text/html" && extname == "") filePath += ".html";
 
-  // log the filePath
   console.log(filePath);
 
-  // Read File
   fs.readFile(filePath, (err, content) => {
     if (err) {
-      if (err.code == "ENOENT") {
-        // Page not found
-        fs.readFile(
+      if (err.code == "ENOENT") {        fs.readFile(
           path.join(__dirname, "public", "404.html"),
           (err, content) => {
             res.writeHead(404, { "Content-Type": "text/html" });
@@ -55,12 +46,10 @@ const server = http.createServer((req, res) => {
           }
         );
       } else {
-        //  Some server error
         res.writeHead(500);
         res.end(`Server Error: ${err.code}`);
       }
     } else {
-      // Success
       res.writeHead(200, { "Content-Type": contentType });
       res.end(content, "utf8");
     }
